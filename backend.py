@@ -63,5 +63,3 @@ def authenticate_complete():
 
 if __name__ == '__main__':
     app.run(port=5000)
-
-# TODO: Create a new file for app
