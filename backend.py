@@ -46,5 +46,22 @@ def authenticate_begin():
     session["fido2_auth_state"] = state
     return jsonify(options)
 
-# TODO: Implement authenticate_complete
+@app.route('/authenticate_complete', methods=['POST'])
+def authenticate_complete():
+    credential = request.json["credential"]
+    state = session.pop("fido2_auth_state", None)
+
+    server.authenticate_complete(
+        state,
+        users["credentialId"],
+        credential["clientDataJSON"],
+        credential["authenticatorData"],
+        credential["signature"]
+    )
+
+    return jsonify({"status": "ok"})
+
+if __name__ == '__main__':
+    app.run(port=5000)
+
 # TODO: Create a new file for app
