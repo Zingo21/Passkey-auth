@@ -8,7 +8,7 @@ class PasskeyApp(QWidget):
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle("Passkey App")
+        self.setWindowTitle("Passkey Desktop App")
         self.setGeometry(100, 100, 300, 200)
 
         layout = QVBoxLayout()
@@ -21,7 +21,7 @@ class PasskeyApp(QWidget):
         self.register_button.clicked.connect(self.register_passkey)
         layout.addWidget(self.register_button)
 
-        self.login_button = QPushButton("Login with Passkey", self)
+        self.login_button = QPushButton("Log in with Passkey", self)
         self.login_button.clicked.connect(self.authenticate_passkey)
         layout.addWidget(self.login_button)
 
@@ -33,28 +33,28 @@ class PasskeyApp(QWidget):
     def register_passkey(self):
         username = self.username_input.text()
         if not username:
-            self.status_label.setText("Username is required")
+            self.status_label.setText("Type a username!")
             return
-        
+
         response = requests.post("http://localhost:5000/register/begin", json={"username": username})
         if response.status_code == 200:
             self.status_label.setText("Passkey registered!")
         else:
-            self.status_label.setText("Error registering passkey!")
+            self.status_label.setText("Registration failed!")
 
     def authenticate_passkey(self):
         username = self.username_input.text()
         if not username:
-            self.status_label.setText("Username is required")
+            self.status_label.setText("Type a username!")
             return
-        
+
         response = requests.post("http://localhost:5000/authenticate/begin", json={"username": username})
         if response.status_code == 200:
-            self.status_label.setText("Passkey authenticated!")
+            self.status_label.setText("Logged in with Passkey!")
         else:
-            self.status_label.setText("Error authenticating passkey!")
+            self.status_label.setText("Authentication failed!")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = PasskeyApp()
     window.show()
