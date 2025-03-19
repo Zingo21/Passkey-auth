@@ -45,3 +45,6 @@ def authenticate_begin():
     options, state = server.authenticate_begin([users[username]])
     session["fido2_auth_state"] = state
     return jsonify(options)
+
+# TODO: Implement authenticate_complete
+# TODO: Create a new file for app
