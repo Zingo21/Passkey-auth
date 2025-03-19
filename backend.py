@@ -36,3 +36,12 @@ def register_complete():
     users[credential["id"]] = auth_data.credential_data
     return jsonify({"status": "ok"})
 
+@app.route('/authenticate_begin', methods=['POST'])
+def authenticate_begin():
+    username = request.json["username"]
+    if username not in users:
+        return jsonify({"error": "User not found"}), 404
+    
+    options, state = server.authenticate_begin([users[username]])
+    session["fido2_auth_state"] = state
+    return jsonify(options)
