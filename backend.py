@@ -22,3 +22,17 @@ def register_begin():
     session["fido2_state"] = state
     return jsonify(options)
 
+@app.route('/register_complete', methods=['POST'])
+def register_complete():
+    credential = request.json["credential"]
+    state = session.pop("fido2_state", None)
+
+    auth_data = server.register_complete(
+        state, 
+        credential["clientDataJSON"],
+        credential["attestationObject"]
+    )
+
+    users[credential["id"]] = auth_data.credential_data
+    return jsonify({"status": "ok"})
+
