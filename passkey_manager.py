@@ -14,6 +14,8 @@ import json
 from typing import Dict, List, Optional
 import logging
 
+# TODO: Install pyqt6-tools on windows to build GUI
+
 class PasskeyManager:
     def __init__(self, rp_id: str = "localhost", rp_name: str = "PyQt App"):
         self.rp_id = rp_id
