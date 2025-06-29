@@ -28,7 +28,7 @@ class PasskeyManager:
         self.credentials: Dict[bytes, dict] = {}
 
     def register_begin(self, username: str, display_name: Optional[str] = None) -> dict:
-        """Initiera passkey-registrering"""
+        """Initiate passkey registration"""
         user_id = secrets.token_hex(16)
         display_name = display_name or username
         
@@ -56,7 +56,7 @@ class PasskeyManager:
         }
 
     def register_complete(self, user_id: str, credential: dict, challenge: bytes) -> bool:
-        """Slutför registrering"""
+        """Complete passkey registration"""
         if user_id not in self.users:
             raise ValueError("User not found")
         
@@ -79,7 +79,7 @@ class PasskeyManager:
             return False
 
     def authenticate_begin(self, username: str) -> dict:
-        """Initiera inloggning"""
+        """Initiate authentication"""
         user = next((u for u in self.users.values() if u['name'] == username), None)
         if not user:
             raise ValueError("User not found")
@@ -104,7 +104,7 @@ class PasskeyManager:
         }
 
     def authenticate_complete(self, credential: dict, challenge: bytes) -> dict:
-        """Slutför inloggning"""
+        """Compltete authentication"""
         try:
             credential_id = credential.get('rawId')
             if credential_id not in self.credentials:
@@ -124,3 +124,36 @@ class PasskeyManager:
         except Exception as e:
             self.logger.error(f"Authentication failed: {e}")
             raise
+
+    def get_web_authn_script(self, options: dict, is_registration: bool) -> str:
+        """Generate JavaScript for WebAuthn"""
+        action = "navigator.credentials.create" if is_registration else "navigator.credentials.get"
+        return f"""
+        async function runWebAuthn() {{
+            try {{
+                const options = {json.dumps(options)};
+                const credential = await {action}({{publicKey: options}});
+                window.pywebview.api.handleCredential(credential);
+            }} catch (error) {{
+                window.pywebview.api.handleError(error.message);
+            }}
+        }}
+        runWebAuthn();
+        """
+    def get_user_credentials(self, username: str) -> list:
+        """Fetch all credentials for user"""
+        user = next((u for u in self.users.values() if u['name'] == username), None)
+        if not user:
+            return []
+        
+        return [
+            cred for cred in self.credentials.values() 
+            if cred['user_id'] == user['id']
+        ]
+
+    def remove_credential(self, credential_id: bytes) -> bool:
+        """Remove passkey"""
+        if credential_id in self.credentials:
+            del self.credentials[credential_id]
+            return True
+        return False
