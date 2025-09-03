@@ -8,11 +8,11 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.passkey_manager = PasskeyManager()
         
-        # Main window setup
+        # Skapa huvudwidget
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
         
-        # Layout and componenter
+        # Layout och komponenter
         layout = QVBoxLayout()
         self.label = QLabel("Välkommen! Logga in för att fortsätta.")
         layout.addWidget(self.label)
